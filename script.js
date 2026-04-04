@@ -54,14 +54,96 @@ class MatrixRain {
     }
 }
 
+// Shield Matrix Effect
+class ShieldMatrix {
+    constructor() {
+        this.canvas = document.getElementById('shield-matrix');
+        this.ctx = this.canvas.getContext('2d');
+        this.chars = '01';
+        this.fontSize = 12;
+        this.columns = 0;
+        this.drops = [];
+        this.shieldPath = null;
+        this.fillHeight = 240;
+        
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.createShieldPath();
+        this.init();
+    }
+    
+    resize() {
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = 300;
+        this.canvas.height = 360;
+        this.columns = Math.floor(this.canvas.width / this.fontSize);
+        this.drops = Array(this.columns).fill(1).map(() => Math.floor(Math.random() * -20));
+    }
+    
+    createShieldPath() {
+        // Create shield clipping path (scaled to canvas size)
+        this.shieldPath = new Path2D();
+        const scale = 1.5; // 300/200 = 1.5
+        this.shieldPath.moveTo(100 * scale, 10 * scale);
+        this.shieldPath.lineTo(180 * scale, 40 * scale);
+        this.shieldPath.lineTo(180 * scale, 100 * scale);
+        this.shieldPath.quadraticCurveTo(180 * scale, 180 * scale, 100 * scale, 230 * scale);
+        this.shieldPath.quadraticCurveTo(20 * scale, 180 * scale, 20 * scale, 100 * scale);
+        this.shieldPath.lineTo(20 * scale, 40 * scale);
+        this.shieldPath.closePath();
+    }
+    
+    setFillHeight(percentage) {
+        this.fillHeight = 360 - (360 * (percentage / 100));
+    }
+    
+    init() {
+        setInterval(() => this.draw(), 50);
+    }
+    
+    draw() {
+        // Clear with transparency
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Apply shield clipping
+        this.ctx.save();
+        this.ctx.clip(this.shieldPath);
+        
+        // Draw matrix only in filled area
+        this.ctx.fillStyle = '#00ff41';
+        this.ctx.font = this.fontSize + 'px monospace';
+        
+        for (let i = 0; i < this.drops.length; i++) {
+            const char = this.chars[Math.floor(Math.random() * this.chars.length)];
+            const x = i * this.fontSize;
+            const y = this.drops[i] * this.fontSize;
+            
+            // Only draw if in filled water area
+            if (y > this.fillHeight) {
+                const opacity = Math.min((y - this.fillHeight) / 50, 0.8);
+                this.ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
+                this.ctx.fillText(char, x, y);
+            }
+            
+            if (y > this.canvas.height && Math.random() > 0.975) {
+                this.drops[i] = Math.floor(this.fillHeight / this.fontSize);
+            }
+            this.drops[i]++;
+        }
+        
+        this.ctx.restore();
+    }
+}
+
 // Progress bar animation
 class DonationProgress {
-    constructor() {
+    constructor(shieldMatrix) {
         this.percentage = 0;
         this.targetPercentage = (CONFIG.currentAmount / CONFIG.targetAmount) * 100;
         this.waterFill = document.getElementById('water-fill');
         this.percentageText = document.getElementById('percentage-text');
         this.progressPercent = document.getElementById('progress-percent');
+        this.shieldMatrix = shieldMatrix;
         this.waves = [
             document.getElementById('wave1'),
             document.getElementById('wave2'),
@@ -110,6 +192,11 @@ class DonationProgress {
             const d = `M0,${waveY} Q50,${waveY - 10} 100,${waveY} T200,${waveY} L200,240 L0,240 Z`;
             wave.setAttribute('d', d);
         });
+        
+        // Update shield matrix fill height (scale from SVG coords to canvas coords)
+        if (this.shieldMatrix) {
+            this.shieldMatrix.setFillHeight(this.percentage);
+        }
         
         // Increase matrix intensity based on progress
         this.updateMatrixIntensity();
@@ -195,8 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start matrix rain
     new MatrixRain();
     
+    // Start shield matrix
+    const shieldMatrix = new ShieldMatrix();
+    
     // Animate progress
-    new DonationProgress();
+    new DonationProgress(shieldMatrix);
     
     // Animate counters
     new Counter('current-amount', CONFIG.currentAmount, '₺');
