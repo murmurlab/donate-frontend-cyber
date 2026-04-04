@@ -1,0 +1,262 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0d0d0d;
+    color: #e0e0e0;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+#matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.15;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+    animation: fadeInDown 1s ease;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #00ff41;
+    margin-bottom: 15px;
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #b0b0b0;
+}
+
+.stats-section {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+    animation: fadeIn 1s ease 0.3s both;
+}
+
+.stat-card {
+    background: rgba(0, 255, 65, 0.05);
+    border: 2px solid #00ff41;
+    border-radius: 15px;
+    padding: 25px 40px;
+    min-width: 180px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 30px rgba(0, 255, 65, 0.3);
+}
+
+.stat-card.highlight {
+    background: rgba(0, 255, 65, 0.1);
+    border-width: 3px;
+}
+
+.stat-value {
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #00ff41;
+    margin-bottom: 10px;
+    font-family: 'Courier New', monospace;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: #b0b0b0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.shield-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 60px auto;
+    animation: fadeIn 1s ease 0.6s both;
+}
+
+.shield-outline {
+    width: 300px;
+    height: 360px;
+    filter: drop-shadow(0 0 30px rgba(0, 255, 65, 0.4));
+}
+
+.shield-border {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawShield 2s ease forwards;
+}
+
+#water-fill {
+    transform-origin: center bottom;
+}
+
+.wave {
+    animation: wave 3s ease-in-out infinite;
+}
+
+#wave2 {
+    animation-delay: -1s;
+}
+
+#wave3 {
+    animation-delay: -2s;
+}
+
+#percentage-text {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.shield-info {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.progress-label {
+    font-size: 1.3em;
+    color: #00ff41;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.info-section {
+    background: rgba(0, 255, 65, 0.05);
+    border: 1px solid #00ff41;
+    border-radius: 15px;
+    padding: 40px;
+    margin: 40px auto;
+    max-width: 800px;
+    animation: fadeIn 1s ease 0.9s both;
+}
+
+.info-section h2 {
+    color: #00ff41;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.info-section p {
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #d0d0d0;
+}
+
+.info-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-section li {
+    padding: 12px 0;
+    font-size: 1.1em;
+    color: #d0d0d0;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+}
+
+.info-section li:last-child {
+    border-bottom: none;
+}
+
+footer {
+    text-align: center;
+    margin-top: 60px;
+    padding: 30px;
+    color: #808080;
+    animation: fadeIn 1s ease 1.2s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes drawShield {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    .stats-section {
+        gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 20px 30px;
+        min-width: 140px;
+    }
+    
+    .shield-outline {
+        width: 240px;
+        height: 288px;
+    }
+    
+    .info-section {
+        padding: 25px;
+    }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siber Güvenlik Kursu - Bağış Kampanyası</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+    
+    <div class="container">
+        <header>
+            <h1>🛡️ Siber Güvenlik Eğitim Kampanyası</h1>
+            <p class="subtitle">Dijital güvenlik eğitimini herkes için erişilebilir kılalım</p>
+        </header>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-value" id="current-amount">0</div>
+                <div class="stat-label">Toplanan</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="stat-value" id="target-amount">100,000</div>
+                <div class="stat-label">Hedef</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="supporter-count">0</div>
+                <div class="stat-label">Destekçi</div>
+            </div>
+        </div>
+
+        <div class="shield-container">
+            <svg class="shield-outline" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <clipPath id="shield-clip">
+                        <path d="M100,10 L180,40 L180,100 Q180,180 100,230 Q20,180 20,100 L20,40 Z"/>
+                    </clipPath>
+                    <linearGradient id="water-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#00ff41;stop-opacity:0.3" />
+                        <stop offset="50%" style="stop-color:#00ff41;stop-opacity:0.6" />
+                        <stop offset="100%" style="stop-color:#00ff41;stop-opacity:0.9" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Shield border -->
+                <path class="shield-border" d="M100,10 L180,40 L180,100 Q180,180 100,230 Q20,180 20,100 L20,40 Z" 
+                      fill="none" stroke="#00ff41" stroke-width="2"/>
+                
+                <!-- Water fill with clip -->
+                <g clip-path="url(#shield-clip)">
+                    <rect id="water-fill" x="0" y="0" width="200" height="240" fill="url(#water-gradient)"/>
+                    
+                    <!-- Wave paths -->
+                    <path id="wave1" class="wave" d="M0,200 Q50,190 100,200 T200,200 L200,240 L0,240 Z" fill="#00ff41" opacity="0.4"/>
+                    <path id="wave2" class="wave" d="M0,205 Q50,195 100,205 T200,205 L200,240 L0,240 Z" fill="#00ff41" opacity="0.3"/>
+                    <path id="wave3" class="wave" d="M0,210 Q50,200 100,210 T200,210 L200,240 L0,240 Z" fill="#00ff41" opacity="0.2"/>
+                </g>
+                
+                <!-- Percentage text -->
+                <text id="percentage-text" x="100" y="120" text-anchor="middle" 
+                      fill="#00ff41" font-size="32" font-weight="bold" font-family="'Courier New', monospace">0%</text>
+            </svg>
+            
+            <div class="shield-info">
+                <div class="progress-label">İlerleme: <span id="progress-percent">0</span>%</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Kampanya Hakkında</h2>
+            <p>Bu kampanya ile herkesin erişebileceği kaliteli siber güvenlik eğitimi materyalleri oluşturuyoruz. 
+               Bağışlarınız sayesinde:</p>
+            <ul>
+                <li>🎓 Ücretsiz video dersler</li>
+                <li>📚 Açık kaynak eğitim materyalleri</li>
+                <li>🔐 Pratik güvenlik laboratuvarları</li>
+                <li>🌐 Türkçe siber güvenlik kaynakları</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Her bağış, dijital dünyayı daha güvenli hale getirmeye katkıdır 🔒</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
