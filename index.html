@@ -1,3 +1,7 @@
+<!--
+File: index.html
+-->
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -18,22 +22,24 @@
             <svg class="shield-outline" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <clipPath id="shield-clip">
-                        <path d="M100,10 L180,40 L180,100 Q180,180 100,230 Q20,180 20,100 L20,40 Z"/>
+                        <path d="M100,12 L178,41 L178,100 Q178,179 100,228 Q22,179 22,100 L22,41 Z"/>
                     </clipPath>
                     <linearGradient id="water-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.4" />
-                        <stop offset="50%" style="stop-color:#00ddff;stop-opacity:0.5" />
-                        <stop offset="100%" style="stop-color:#0088ff;stop-opacity:0.6" />
+                        <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.5" />
+                        <stop offset="50%" style="stop-color:#00ffaa;stop-opacity:0.6" />
+                        <stop offset="100%" style="stop-color:#39ff14;stop-opacity:0.7" />
                     </linearGradient>
                     <linearGradient id="border-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ff0088">
-                            <animate attributeName="stop-color" values="#ff0088;#00ddff;#ffaa00;#ff0088" dur="4s" repeatCount="indefinite"/>
+                        <stop offset="0%" style="stop-color:#39ff14">
+                            <animate attributeName="stop-color" values="#39ff14;#00ffff;#bfff00;#40e0d0;#39ff14" dur="5s" repeatCount="indefinite"/>
                         </stop>
-                        <stop offset="50%" style="stop-color:#00ddff">
-                            <animate attributeName="stop-color" values="#00ddff;#ffaa00;#ff0088;#00ddff" dur="4s" repeatCount="indefinite"/>
+                        <stop offset="50%" style="stop-color:#00ffff">
+                            <animate attributeName="stop-color" values="#00ffff;#bfff00;#40e0d0;#39ff14;#00ffff" dur="5s" repeatCount="indefinite"/>
                         </stop>
-                        <stop offset="100%" style="stop-color:#ffaa00">
-                            <animate attributeName="stop-color" values="#ffaa00;#ff0088;#00ddff;#ffaa00" dur="4s" repeatCount="indefinite"/>
+                        <stop offset="100%" style="stop-color:#40e0d0">
+                            <animate attributeName="stop-color" values="#40e0d0;#39ff14;#00ffff;#bfff00;#40e0d0" dur="5s" repeatCount="indefinite"/>
+                        </stop>
+                    </linearGradient>
                         </stop>
                     </linearGradient>
                 </defs>
@@ -42,19 +48,19 @@
                 <path class="shield-border" d="M100,10 L180,40 L180,100 Q180,180 100,230 Q20,180 20,100 L20,40 Z" 
                       fill="none" stroke="url(#border-gradient)" stroke-width="3"/>
                 
-                <!-- Inner border between gradient border and liquid -->
-                <path class="shield-inner-border" d="M100,13 L177,41 L177,100 Q177,179 100,227 Q23,179 23,100 L23,41 Z" 
-                      fill="none" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                
                 <!-- Water fill with clip -->
                 <g clip-path="url(#shield-clip)">
                     <rect id="water-fill" x="0" y="0" width="200" height="240" fill="url(#water-gradient)"/>
                     
                     <!-- Wave paths -->
-                    <path id="wave1" class="wave" d="M0,200 Q50,190 100,200 T200,200 L200,240 L0,240 Z" fill="#00ff88" opacity="0.3"/>
-                    <path id="wave2" class="wave" d="M0,205 Q50,195 100,205 T200,205 L200,240 L0,240 Z" fill="#00ddff" opacity="0.25"/>
-                    <path id="wave3" class="wave" d="M0,210 Q50,200 100,210 T200,210 L200,240 L0,240 Z" fill="#0088ff" opacity="0.2"/>
+                    <path id="wave1" class="wave" d="M0,200 Q50,190 100,200 T200,200 L200,240 L0,240 Z" fill="#00ff88" opacity="0.4"/>
+                    <path id="wave2" class="wave" d="M0,205 Q50,195 100,205 T200,205 L200,240 L0,240 Z" fill="#39ff14" opacity="0.35"/>
+                    <path id="wave3" class="wave" d="M0,210 Q50,200 100,210 T200,210 L200,240 L0,240 Z" fill="#00ffaa" opacity="0.3"/>
                 </g>
+                
+                <!-- Inner border between gradient border and liquid (above water) -->
+                <path class="shield-inner-border" d="M100,12 L178,41 L178,100 Q178,179 100,228 Q22,179 22,100 L22,41 Z" 
+                      fill="none" stroke="#ffffff" stroke-width="0.5"/>
                 
                 <!-- Percentage text -->
                 <text id="percentage-text" x="100" y="120" text-anchor="middle" 

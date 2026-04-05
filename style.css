@@ -152,7 +152,7 @@ h1 {
 
 
 @keyframes rotate-slide-fade {
-    0%, 35% { 
+    0%, 25% { 
         transform: translate(-60px, 60px) rotate(0deg);
         opacity: 0;
     }
@@ -160,7 +160,7 @@ h1 {
         transform: translate(0px, 0px) rotate(300deg);
         opacity: 0.75;
     }
-   	65%, 100% { 
+   	75%, 100% { 
         transform: translate(60px, -60px) rotate(600deg);
         opacity: 0;
     }
@@ -215,7 +215,7 @@ h1 {
     width: 300px;
     height: 360px;
     pointer-events: none;
-    z-index: 1;
+    z-index: 3;
 }
 
 .shield-outline {

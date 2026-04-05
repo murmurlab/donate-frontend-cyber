@@ -183,7 +183,7 @@ class ShieldMatrix {
         this.ctx.clip(this.shieldPath);
         
         // Draw matrix only in filled area
-        this.ctx.fillStyle = '#00ff41';
+        this.ctx.fillStyle = '#00aa44';
         this.ctx.font = this.fontSize + 'px monospace';
         
         for (let i = 0; i < this.drops.length; i++) {
@@ -193,8 +193,8 @@ class ShieldMatrix {
             
             // Only draw if in filled water area
             if (y > this.fillHeight) {
-                const opacity = Math.min((y - this.fillHeight) / 50, 0.8);
-                this.ctx.fillStyle = `rgba(0, 255, 136, ${opacity})`;
+                const opacity = Math.min((y - this.fillHeight) / 50, 0.7);
+                this.ctx.fillStyle = `rgba(0, 100, 40, ${opacity})`;
                 this.ctx.fillText(char, x, y);
             }
             
