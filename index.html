@@ -14,7 +14,21 @@ File: index.html
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="glitch-overlay"></div>
+    <div class="scanlines-bg"></div>
+    <div class="flicker-overlay"></div>
+    <div class="vignette-overlay"></div>
     <canvas id="particles-canvas"></canvas>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="shell-prompt">cybersec@donate:~$</span>
+                <div class="scrolling-donors"></div>
+            </div>
+        </div>
+    </nav>
     
     <div class="container">
         <div class="shield-container">
@@ -25,37 +39,34 @@ File: index.html
                         <path d="M100,12 L178,41 L178,100 Q178,179 100,228 Q22,179 22,100 L22,41 Z"/>
                     </clipPath>
                     <linearGradient id="water-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.5" />
-                        <stop offset="50%" style="stop-color:#00ffaa;stop-opacity:0.6" />
-                        <stop offset="100%" style="stop-color:#39ff14;stop-opacity:0.7" />
+                        <stop offset="0%" style="stop-color:#a8ff00;stop-opacity:0.5" />
+                        <stop offset="50%" style="stop-color:#b8ff10;stop-opacity:0.6" />
+                        <stop offset="100%" style="stop-color:#c0ff20;stop-opacity:0.7" />
                     </linearGradient>
-                    <linearGradient id="border-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#39ff14">
-                            <animate attributeName="stop-color" values="#39ff14;#00ffff;#bfff00;#40e0d0;#39ff14" dur="5s" repeatCount="indefinite"/>
-                        </stop>
-                        <stop offset="50%" style="stop-color:#00ffff">
-                            <animate attributeName="stop-color" values="#00ffff;#bfff00;#40e0d0;#39ff14;#00ffff" dur="5s" repeatCount="indefinite"/>
-                        </stop>
-                        <stop offset="100%" style="stop-color:#40e0d0">
-                            <animate attributeName="stop-color" values="#40e0d0;#39ff14;#00ffff;#bfff00;#40e0d0" dur="5s" repeatCount="indefinite"/>
-                        </stop>
-                    </linearGradient>
-                        </stop>
-                    </linearGradient>
+                    <radialGradient id="border-gradient" cx="50%" cy="50%" r="55%">
+                        <stop offset="45%" style="stop-color:#000502" />
+                        <stop offset="85%" style="stop-color:#004a22" />
+                        <stop offset="100%" style="stop-color:#00ff88" />
+                    </radialGradient>
+                    <pattern id="dark-grid" width="10" height="10" patternUnits="userSpaceOnUse">
+						<rect width="10" height="10" fill="#002221CC" />
+                        <!-- <rect width="10" height="10" fill="transparent" /> -->
+                        <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#00ff88" stroke-width="0.5" stroke-opacity="0.15" />
+                    </pattern>
                 </defs>
                 
                 <!-- Shield border -->
-                <path class="shield-border" d="M100,10 L180,40 L180,100 Q180,180 100,230 Q20,180 20,100 L20,40 Z" 
+                <path class="shield-border" d="M100,10 L180,40 L180,100 Q180,180 100,230 Q20,180 20,100 L20,40 Z"
                       fill="none" stroke="url(#border-gradient)" stroke-width="3"/>
                 
                 <!-- Water fill with clip -->
                 <g clip-path="url(#shield-clip)">
+                    <!-- Glitch TV Grid -->
+                    <rect class="glitch-grid" x="-20" y="-20" width="240" height="280" fill="url(#dark-grid)" />
                     <rect id="water-fill" x="0" y="0" width="200" height="240" fill="url(#water-gradient)"/>
-                    
-                    <!-- Wave paths -->
-                    <path id="wave1" class="wave" d="M0,200 Q50,190 100,200 T200,200 L200,240 L0,240 Z" fill="#00ff88" opacity="0.4"/>
-                    <path id="wave2" class="wave" d="M0,205 Q50,195 100,205 T200,205 L200,240 L0,240 Z" fill="#39ff14" opacity="0.35"/>
-                    <path id="wave3" class="wave" d="M0,210 Q50,200 100,210 T200,210 L200,240 L0,240 Z" fill="#00ffaa" opacity="0.3"/>
+                    <path id="wave1" class="wave" d="M0,200 Q50,190 100,200 T200,200 L200,240 L0,240 Z" fill="#a8ff00" opacity="0.4"/>
+                    <path id="wave2" class="wave" d="M0,205 Q50,195 100,205 T200,205 L200,240 L0,240 Z" fill="#b8ff10" opacity="0.35"/>
+                    <path id="wave3" class="wave" d="M0,210 Q50,200 100,210 T200,210 L200,240 L0,240 Z" fill="#c0ff20" opacity="0.3"/>
                 </g>
                 
                 <!-- Inner border between gradient border and liquid (above water) -->
@@ -69,28 +80,114 @@ File: index.html
             </svg>
             
             <div class="shield-info">
-                <div class="progress-label">İlerleme: <span id="progress-percent">0</span>%</div>
+                <div class="progress-label">Kalan: <span id="progress-percent">2230</span>tl</div>
             </div>
         </div>
 
         <div class="stats-section">
-            <div class="stat-card">
+            <div class="stat-card orange" data-modal="how-to" style="cursor: pointer;">
                 <div class="stat-value" id="current-amount">0</div>
                 <div class="stat-label">Toplanan</div>
+                <div class="stat-hover-text">Bağış Yap</div>
             </div>
-            <div class="stat-card highlight">
+            <div class="stat-card highlight" data-modal="course" style="cursor: pointer;">
                 <div class="stat-value" id="target-amount">100,000</div>
                 <div class="stat-label">Hedef</div>
+                <div class="stat-hover-text">Kurs İçeriği</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card purple" data-modal="donors" style="cursor: pointer;">
                 <div class="stat-value" id="supporter-count">0</div>
                 <div class="stat-label">Destekçi</div>
+                <div class="stat-hover-text">Bağış Yapanlar</div>
             </div>
         </div>
 
         <footer>
             <p>Her bağış, dijital dünyayı daha güvenli hale getirmeye katkıdır</p>
         </footer>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="modal-donors">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-header">
+                <div class="info-icon">👥</div>
+                <h3 class="modal-title">Bağış Yapanlar</h3>
+            </div>
+            <div class="modal-body">
+                <p>Topluluk destekçilerimiz sayesinde siber güvenlik eğitimini herkes için erişilebilir hale getiriyoruz.</p>
+                <div class="donors-chart-container">
+                    <div id="donors-pie-chart"></div>
+                    <ul id="donors-legend" class="donor-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-course">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-header">
+                <div class="info-icon">📚</div>
+                <h3 class="modal-title">Kurs İçeriği</h3>
+            </div>
+            <div class="modal-body">
+                <p>Profesyonel siber güvenlik uzmanlarından kapsamlı eğitim programı:</p>
+                <ul class="course-topics">
+                    <li>🔐 Network Security & Firewalls</li>
+                    <li>🛡️ Penetration Testing</li>
+                    <li>🔍 Ethical Hacking</li>
+                    <li>🔒 Cryptography</li>
+                    <li>🌐 Web Application Security</li>
+                    <li>💾 Secure Coding Practices</li>
+                    <li>🔑 Identity & Access Management</li>
+                    <li>🚨 Incident Response</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-how-to">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-header">
+                <div class="info-icon">💳</div>
+                <h3 class="modal-title">Nasıl Bağış Yapılır</h3>
+            </div>
+            <div class="modal-body">
+                <p>Aşağıdaki IBAN adresine bağış göndererek kursa destek olabilirsiniz:</p>
+                
+                <div class="bank-info-box">
+                    <div class="bank-field">
+                        <span class="field-label">Alıcı İsim:</span>
+                        <div class="field-value">
+                            <span id="bank-name">AHMET BAŞAR</span>
+                            <button class="copy-btn" onclick="copyToClipboard('bank-name', this)" title="Kopyala">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bank-field">
+                        <span class="field-label">IBAN:</span>
+                        <div class="field-value">
+                            <span id="bank-iban">TR12 3456 7890 1234 5678 9012 34</span>
+                            <button class="copy-btn" onclick="copyToClipboard('bank-iban', this)" title="Kopyala">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <strong>⚠️ Önemli:</strong> Lütfen banka havalesi/EFT yaparken açıklama kısmına <strong>mutlaka kendi isminizi</strong> yazın. Aksi takdirde bağışın kimden geldiğini anlayamayız!
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

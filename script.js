@@ -1,3 +1,6 @@
+/*
+ * File: script.js
+ */
 // Configuration
 const CONFIG = {
     targetAmount: 100000,
@@ -12,9 +15,9 @@ class ParticleNetwork {
         this.canvas = document.getElementById('particles-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.particles = [];
-        this.particleCount = 80;
-        this.connectionDistance = 150;
-        this.mouse = { x: null, y: null, radius: 200 };
+        this.particleCount = 150;
+        this.connectionDistance = 180;
+        this.mouse = { x: null, y: null, radius: 250 };
         
         this.resize();
         this.init();
@@ -147,27 +150,28 @@ class ShieldMatrix {
     
     resize() {
         const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = 300;
-        this.canvas.height = 360;
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
         this.columns = Math.floor(this.canvas.width / this.fontSize);
         this.drops = Array(this.columns).fill(1).map(() => Math.floor(Math.random() * -20));
     }
     
     createShieldPath() {
         // Create shield clipping path (scaled to canvas size)
+        // Using inner border coordinates to prevent text overflow on outer border
         this.shieldPath = new Path2D();
-        const scale = 1.5; // 300/200 = 1.5
-        this.shieldPath.moveTo(100 * scale, 10 * scale);
-        this.shieldPath.lineTo(180 * scale, 40 * scale);
-        this.shieldPath.lineTo(180 * scale, 100 * scale);
-        this.shieldPath.quadraticCurveTo(180 * scale, 180 * scale, 100 * scale, 230 * scale);
-        this.shieldPath.quadraticCurveTo(20 * scale, 180 * scale, 20 * scale, 100 * scale);
-        this.shieldPath.lineTo(20 * scale, 40 * scale);
+        const scale = this.canvas.width / 200; // Original viewBox width=200
+        this.shieldPath.moveTo(100 * scale, 12 * scale);
+        this.shieldPath.lineTo(178 * scale, 41 * scale);
+        this.shieldPath.lineTo(178 * scale, 100 * scale);
+        this.shieldPath.quadraticCurveTo(178 * scale, 179 * scale, 100 * scale, 228 * scale);
+        this.shieldPath.quadraticCurveTo(22 * scale, 179 * scale, 22 * scale, 100 * scale);
+        this.shieldPath.lineTo(22 * scale, 41 * scale);
         this.shieldPath.closePath();
     }
     
     setFillHeight(percentage) {
-        this.fillHeight = 360 - (360 * (percentage / 100));
+        this.fillHeight = this.canvas.height - (this.canvas.height * (percentage / 100));
     }
     
     init() {
@@ -358,6 +362,193 @@ document.addEventListener('DOMContentLoaded', () => {
     new Counter('target-amount', CONFIG.targetAmount, '₺');
     new Counter('supporter-count', CONFIG.supporters);
     
+    // Scrolling donors ticker
+    const scrollingDonors = document.querySelector('.scrolling-donors');
+    const donors = [
+        { name: 'Ahmet Y.', amount: 5000, amountStr: '5,000₺' },
+        { name: 'Mehmet K.', amount: 1000, amountStr: '1,000₺' },
+        { name: 'Ayşe D.', amount: 250, amountStr: '250₺' },
+        { name: 'Fatma S.', amount: 750, amountStr: '750₺' },
+        { name: 'Ali R.', amount: 2000, amountStr: '2,000₺' },
+        { name: 'Zeynep T.', amount: 300, amountStr: '300₺' },
+        { name: 'Can B.', amount: 1500, amountStr: '1,500₺' },
+        { name: 'Elif M.', amount: 400, amountStr: '400₺' },
+        { name: 'Burak A.', amount: 600, amountStr: '600₺' },
+        { name: 'Selin P.', amount: 900, amountStr: '900₺' },
+        { name: 'Onur C.', amount: 100, amountStr: '100₺' },
+        { name: 'Hasan Y.', amount: 150, amountStr: '150₺' },
+        { name: 'Kemal N.', amount: 50, amountStr: '50₺' }
+    ];
+    
+    const pieChart = document.getElementById('donors-pie-chart');
+    const pieLegend = document.getElementById('donors-legend');
+    
+    if (pieChart) {
+        if(pieLegend) pieLegend.style.display = 'none'; // Sakla
+        const totalAmount = donors.reduce((sum, d) => sum + d.amount, 0);
+        
+        let mainSlices = [];
+        let otherSlices = [];
+        
+        donors.forEach(d => {
+            const pct = d.amount / totalAmount;
+            if(pct < 0.025) {
+                otherSlices.push(d);
+            } else {
+                mainSlices.push(d);
+            }
+        });
+        
+        mainSlices.sort((a, b) => b.amount - a.amount);
+        
+        if(otherSlices.length > 0) {
+            let othersTotal = otherSlices.reduce((s,d)=>s+d.amount, 0);
+            mainSlices.push({
+                name: 'Diğer (Küçük Bağışlar)',
+                amount: othersTotal,
+                amountStr: othersTotal + '₺',
+                isOthers: true,
+                list: otherSlices
+            });
+        }
+        
+        const svgNs = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNs, 'svg');
+        svg.setAttribute('viewBox', '-110 -110 220 220');
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.overflow = 'visible';
+        
+        let currentAngle = -Math.PI / 2; // Start at top
+        
+        pieChart.innerHTML = '';
+        pieChart.appendChild(svg);
+        
+        pieChart.style.background = 'none';
+        pieChart.style.border = 'none';
+        pieChart.style.boxShadow = 'none';
+        pieChart.classList.add('svg-pie-container');
+        
+        mainSlices.forEach((slice, idx) => {
+            const angle = (slice.amount / totalAmount) * Math.PI * 2;
+            const color = slice.isOthers ? '#445566' : `hsl(${(idx * 360 / (mainSlices.length-1 || 1)) % 360}, 80%, 60%)`;
+            
+            const x1 = Math.cos(currentAngle) * 100;
+            const y1 = Math.sin(currentAngle) * 100;
+            const x2 = Math.cos(currentAngle + angle) * 100;
+            const y2 = Math.sin(currentAngle + angle) * 100;
+            const largeArc = angle > Math.PI ? 1 : 0;
+            
+            const pathData = `M 0 0 L ${x1} ${y1} A 100 100 0 ${largeArc} 1 ${x2} ${y2} Z`;
+            
+            const g = document.createElementNS(svgNs, 'g');
+            g.classList.add('pie-g-slice');
+            
+            const path = document.createElementNS(svgNs, 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('fill', color);
+            path.setAttribute('stroke', '#0a141e');
+            path.setAttribute('stroke-width', '0.5');
+            
+            const tooltipHTML = document.createElement('div');
+            tooltipHTML.classList.add('pie-tooltip');
+            if (slice.isOthers) {
+                let listHtml = slice.list.map(d=>`<div>${d.name}: ${d.amountStr}</div>`).join('');
+                tooltipHTML.innerHTML = `<strong>${slice.name}</strong><br/>${slice.amountStr}<hr/>${listHtml}`;
+            } else {
+                tooltipHTML.innerHTML = `<strong>${slice.name}</strong><br/>${slice.amountStr}`;
+            }
+            
+            g.appendChild(path);
+            svg.appendChild(g);
+            
+            g.addEventListener('mouseenter', (e) => {
+                g.classList.add('active');
+                tooltipHTML.style.display = 'block';
+                tooltipHTML.style.left = e.pageX + 20 + 'px';
+                tooltipHTML.style.top = e.pageY - 20 + 'px';
+            });
+            g.addEventListener('mousemove', (e) => {
+                tooltipHTML.style.left = e.pageX + 20 + 'px';
+                tooltipHTML.style.top = e.pageY - 20 + 'px';
+            });
+            g.addEventListener('mouseleave', () => {
+                g.classList.remove('active');
+                tooltipHTML.style.display = 'none';
+            });
+            
+            document.body.appendChild(tooltipHTML);
+            
+            currentAngle += angle;
+        });
+    }
+
+    const donorHTML = donors.map(d => 
+        `<span class="donor-item"><span class="name">${d.name}</span><span class="amount">${d.amountStr}</span></span>`
+    ).join('');
+    
+    scrollingDonors.innerHTML = `
+        <div class="donor-scroll-content">
+            ${donorHTML}${donorHTML}
+        </div>
+    `;
+    
+    // Modal functionality
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const statCards = document.querySelectorAll('.stat-card[data-modal]');
+    const modals = document.querySelectorAll('.modal');
+    const modalCloses = document.querySelectorAll('.modal-close');
+    const modalOverlays = document.querySelectorAll('.modal-overlay');
+    
+    // Open modal from nav buttons
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modalId = 'modal-' + btn.getAttribute('data-modal');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        });
+    });
+    
+    // Open modal from stat cards
+    statCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const modalId = 'modal-' + card.getAttribute('data-modal');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        });
+    });
+    
+    const closeModal = (modal) => {
+        modal.classList.remove('active');
+    };
+    
+    modalCloses.forEach(btn => {
+        btn.addEventListener('click', () => {
+            closeModal(btn.closest('.modal'));
+        });
+    });
+    
+    modalOverlays.forEach(overlay => {
+        overlay.addEventListener('click', () => {
+            closeModal(overlay.closest('.modal'));
+        });
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            modals.forEach(modal => {
+                if (modal.classList.contains('active')) {
+                    closeModal(modal);
+                }
+            });
+        }
+    });
+    
     // Update current amount periodically (simulating real-time donations)
     setInterval(() => {
         if (Math.random() > 0.7) {
@@ -371,3 +562,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 10000); // Check every 10 seconds
 });
+
+// Global copy function for the How To Donate modal
+window.copyToClipboard = function(elementId, button) {
+    const textToCopy = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+};
