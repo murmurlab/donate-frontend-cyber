@@ -1,56 +1,129 @@
 // Configuration
 const CONFIG = {
     targetAmount: 100000,
-    currentAmount: 45670, // Simulated current donation
+    currentAmount: 45670,
     supporters: 342,
     animationDuration: 2000
 };
 
-// Matrix rain effect
-class MatrixRain {
+// Particle Network Effect
+class ParticleNetwork {
     constructor() {
-        this.canvas = document.getElementById('matrix-bg');
+        this.canvas = document.getElementById('particles-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.chars = '01';
-        this.fontSize = 14;
-        this.columns = 0;
-        this.drops = [];
+        this.particles = [];
+        this.particleCount = 80;
+        this.connectionDistance = 150;
+        this.mouse = { x: null, y: null, radius: 200 };
         
         this.resize();
-        window.addEventListener('resize', () => this.resize());
         this.init();
+        
+        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.x;
+            this.mouse.y = e.y;
+        });
+        
+        window.addEventListener('mouseout', () => {
+            this.mouse.x = null;
+            this.mouse.y = null;
+        });
     }
     
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.columns = Math.floor(this.canvas.width / this.fontSize);
-        this.drops = Array(this.columns).fill(1);
     }
     
     init() {
-        setInterval(() => this.draw(), 50);
+        this.particles = [];
+        for (let i = 0; i < this.particleCount; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 2 + 1
+            });
+        }
+        this.animate();
     }
     
-    draw() {
-        this.ctx.fillStyle = 'rgba(13, 13, 13, 0.05)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.ctx.fillStyle = '#00ff41';
-        this.ctx.font = this.fontSize + 'px monospace';
-        
-        for (let i = 0; i < this.drops.length; i++) {
-            const char = this.chars[Math.floor(Math.random() * this.chars.length)];
-            const x = i * this.fontSize;
-            const y = this.drops[i] * this.fontSize;
-            
-            this.ctx.fillText(char, x, y);
-            
-            if (y > this.canvas.height && Math.random() > 0.975) {
-                this.drops[i] = 0;
+    drawParticles() {
+        this.particles.forEach(particle => {
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+            const gradient = this.ctx.createRadialGradient(
+                particle.x, particle.y, 0,
+                particle.x, particle.y, particle.radius * 3
+            );
+            gradient.addColorStop(0, 'rgba(0, 255, 136, 0.8)');
+            gradient.addColorStop(1, 'rgba(0, 136, 255, 0)');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fill();
+        });
+    }
+    
+    connectParticles() {
+        for (let i = 0; i < this.particles.length; i++) {
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const dx = this.particles[i].x - this.particles[j].x;
+                const dy = this.particles[i].y - this.particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.connectionDistance) {
+                    const opacity = (1 - distance / this.connectionDistance) * 0.5;
+                    this.ctx.strokeStyle = `rgba(0, 255, 136, ${opacity})`;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                    this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                    this.ctx.stroke();
+                }
             }
-            this.drops[i]++;
         }
+    }
+    
+    updateParticles() {
+        this.particles.forEach(particle => {
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            
+            // Mouse interaction
+            if (this.mouse.x != null && this.mouse.y != null) {
+                const dx = this.mouse.x - particle.x;
+                const dy = this.mouse.y - particle.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.mouse.radius) {
+                    const force = (this.mouse.radius - distance) / this.mouse.radius;
+                    const angle = Math.atan2(dy, dx);
+                    particle.vx -= Math.cos(angle) * force * 0.2;
+                    particle.vy -= Math.sin(angle) * force * 0.2;
+                }
+            }
+            
+            // Boundary check
+            if (particle.x < 0 || particle.x > this.canvas.width) particle.vx *= -1;
+            if (particle.y < 0 || particle.y > this.canvas.height) particle.vy *= -1;
+            
+            // Damping
+            particle.vx *= 0.99;
+            particle.vy *= 0.99;
+            
+            // Keep minimum velocity
+            if (Math.abs(particle.vx) < 0.1) particle.vx = (Math.random() - 0.5) * 0.2;
+            if (Math.abs(particle.vy) < 0.1) particle.vy = (Math.random() - 0.5) * 0.2;
+        });
+    }
+    
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawParticles();
+        this.connectParticles();
+        this.updateParticles();
+        requestAnimationFrame(() => this.animate());
     }
 }
 
@@ -121,7 +194,7 @@ class ShieldMatrix {
             // Only draw if in filled water area
             if (y > this.fillHeight) {
                 const opacity = Math.min((y - this.fillHeight) / 50, 0.8);
-                this.ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
+                this.ctx.fillStyle = `rgba(0, 255, 136, ${opacity})`;
                 this.ctx.fillText(char, x, y);
             }
             
@@ -197,9 +270,6 @@ class DonationProgress {
         if (this.shieldMatrix) {
             this.shieldMatrix.setFillHeight(this.percentage);
         }
-        
-        // Increase matrix intensity based on progress
-        this.updateMatrixIntensity();
     }
     
     animateWaves() {
@@ -225,11 +295,6 @@ class DonationProgress {
                 wave.setAttribute('d', path);
             });
         }, 50);
-    }
-    
-    updateMatrixIntensity() {
-        const intensity = 0.15 + (this.percentage / 100) * 0.25;
-        document.getElementById('matrix-bg').style.opacity = intensity;
     }
     
     easeOutCubic(t) {
@@ -279,8 +344,8 @@ class Counter {
 
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Start matrix rain
-    new MatrixRain();
+    // Start particle network
+    new ParticleNetwork();
     
     // Start shield matrix
     const shieldMatrix = new ShieldMatrix();
